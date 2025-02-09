@@ -4,6 +4,14 @@ module.exports = {
     content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
   theme: {
   	extend: {
+		gridTemplateColumns: {
+			'dashboard': '400px 1fr', // Custom column widths
+		},
+		top: {
+			'16': '4rem',
+			'14': '3.5rem',
+			'12': '3rem',
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

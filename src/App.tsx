@@ -1,11 +1,47 @@
 import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
+import routes from "@/app/routes";
 
-// import components
-import LoginPage from "@/pages/auth/login-page";
 
 function App () {
   return (
-    <LoginPage />
+      <Router>
+        <Routes>
+
+          {/* render guest route */}
+          routes.guest.map((route))
+
+          {/* render authenticated user route */}
+          {
+            routes.map((route) => {
+              if (route.children.length > 0) {
+
+                const child_route = route.children.map((child) => {
+                  return (
+                    child.is_index ? <Route element={<route.element />}/> : <Route path={child.path} element={<route.element />}/>
+                  )
+                });
+
+                return (
+                <Route path={route.path} element={<route.element />} >
+                  {child_route}
+                </Route>
+              )
+              } else {
+                return (
+                  <Route path={route.path} element={<route.element />} />
+                )
+              }
+            })
+          }
+          {/* <Route path='/' element={<LandingPage />} />
+          <Route path='/dashboard' element={<DashboardLayout />}>
+            <Route index element={<HomePage />} />
+          </Route>
+          <Route path='/login' element={ <LoginPage />} /> */}
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+        </Routes>
+      </Router>
   )
 }
 
