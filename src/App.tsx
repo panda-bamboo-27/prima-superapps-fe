@@ -1,45 +1,34 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
-import routes from "@/app/routes";
+import routes, {RouteItem, RouteObject} from "@/app/routes";
+import React from "react";
 
+function renderRoute(routes: RouteObject) {
+  if (routes == null) return null;
 
-function App () {
+  for (const key in routes) {
+    if (routes.hasOwnProperty(key)) { // Ensure the key is an own property
+      const routePaths = routes[key];
+      routePaths.map((route: RouteItem) => {
+        if (route.is_index) {
+          return (<Route element={route.element}></Route>)
+        }
+
+        return (
+          <Route path={route.path} element={route.element}>
+            { renderRoute(route.children) }
+          </Route>
+        )
+      });
+    }
+  }
+}
+
+const App: React.FC = () => {
   return (
       <Router>
         <Routes>
-
-          {/* render guest route */}
-          routes.guest.map((route))
-
-          {/* render authenticated user route */}
-          {
-            routes.map((route) => {
-              if (route.children.length > 0) {
-
-                const child_route = route.children.map((child) => {
-                  return (
-                    child.is_index ? <Route element={<route.element />}/> : <Route path={child.path} element={<route.element />}/>
-                  )
-                });
-
-                return (
-                <Route path={route.path} element={<route.element />} >
-                  {child_route}
-                </Route>
-              )
-              } else {
-                return (
-                  <Route path={route.path} element={<route.element />} />
-                )
-              }
-            })
-          }
-          {/* <Route path='/' element={<LandingPage />} />
-          <Route path='/dashboard' element={<DashboardLayout />}>
-            <Route index element={<HomePage />} />
-          </Route>
-          <Route path='/login' element={ <LoginPage />} /> */}
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+          {renderRoute(routes)}
         </Routes>
       </Router>
   )
