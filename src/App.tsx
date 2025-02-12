@@ -1,38 +1,43 @@
-import './App.css'
-import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
-import routes, {RouteItem, RouteObject} from "@/app/routes";
-import React from "react";
+import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import routes, { RouteItem, RouteObject } from '@/app/routes';
+import LandingPage from '@/pages/landing-page';
+import React from 'react';
 
-function renderRoute(routes: RouteObject) {
-  if (routes == null) return null;
-
-  for (const key in routes) {
-    if (routes.hasOwnProperty(key)) { // Ensure the key is an own property
-      const routePaths = routes[key];
-      routePaths.map((route: RouteItem) => {
-        if (route.is_index) {
-          return (<Route element={route.element}></Route>)
-        }
-
+const renderRoute = (routes: RouteObject) => {
+  const elements = Object.keys(routes).map((key, index) => {
+    const routeGroup = routes[key].map((route, index) => {
+      if (route.is_index) {
         return (
-          <Route path={route.path} element={route.element}>
-            { renderRoute(route.children) }
+          <Route index element={route.element}>
+            {Object.keys(route.children).length > 0 && renderRoute(route.children)}
           </Route>
-        )
-      });
-    }
-  }
-}
+        );
+      }
+
+      return (
+        <Route path={route.path} element={route.element}>
+          {Object.keys(route.children).length > 0 && renderRoute(route.children)}
+        </Route>
+      );
+    });
+
+    return routeGroup;
+  });
+
+  return <>{elements}</>;
+};
 
 const App: React.FC = () => {
   return (
-      <Router>
-        <Routes>
-          {renderRoute(routes)}
-        </Routes>
-      </Router>
-  )
-}
+    <Router>
+      <Routes>
+        {renderRoute(routes)}
+        <Route path='*' element={<p>Path not resolved</p>} />
+      </Routes>
+    </Router>
+  );
+};
 
 /*
 function App() {
@@ -65,4 +70,4 @@ function App() {
 }
 
 */
-export default App
+export default App;
