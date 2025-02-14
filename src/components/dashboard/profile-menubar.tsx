@@ -1,16 +1,31 @@
 import ImgProfilePhotoDummy from '@/assets/profile-image-dummy.svg';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function DashboardMenuBar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setDropdownOpen(false);
+        }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+
+  },[])
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
   return (
-    <div className='relative flex flex-row gap-4 items-center'>
-      <p className='hover:text-gray-900 font-bold  text-gray-800 hidden md:block'>Arisal</p>
+    <div className='relative flex flex-row gap-4 items-center' ref={dropdownRef}>
+      <p className='hover:text-gray-900 font-bold text-gray-800 hidden md:block'>Arisal</p>
       <button className='flex items-center focus:outline-none' onClick={toggleDropdown}>
         <img className='w-10 h-10 rounded-full' src={ImgProfilePhotoDummy} alt='Profile' />
         {dropdownOpen && (
@@ -44,7 +59,7 @@ export default function DashboardMenuBar() {
         )}
       </button>
       {dropdownOpen && (
-        <div className='absolute right-0 top-14 mt-2 mt-2 w-48 bg-white rounded-md shadow-lg py-2'>
+        <div className='z-10 absolute right-0 top-14 mt-2 mt-2 w-48 bg-white rounded-md shadow-lg py-2'>
           <p className='text-center font-bold border-b px-2 py-1 hover:text-gray-900 text-gray-800 block md:hidden '>
             Arisal
           </p>
